@@ -39,7 +39,7 @@ async function middleware(request) {
 }
 const config = {
     matcher: [
-        "/dashboard"
+        "/admin"
     ]
 };
 }}),
