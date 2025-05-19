@@ -1,14 +1,20 @@
-import { NextRequest, NextResponse } from "next/server";
-import { getSessionCookie } from "better-auth/cookies";
+import { getSessionCookie } from "better-auth/cookies"
+import { type NextRequest, NextResponse } from "next/server"
 
 export async function middleware(request: NextRequest) {
-	const cookies = getSessionCookie(request);
-	if (!cookies) {
-		return NextResponse.redirect(new URL("/", request.url));
-	}
-	return NextResponse.next();
+    // Check cookie for optimistic redirects for protected routes
+    // Use getSession in your RSC to protect a route via SSR or useAuthenticate client side
+    const sessionCookie = getSessionCookie(request)
+
+    if (!sessionCookie) {
+        const redirectTo = request.nextUrl.pathname + request.nextUrl.search
+        return NextResponse.redirect(new URL(`/auth/sign-in?redirectTo=${redirectTo}`, request.url))
+    }
+
+    return NextResponse.next()
 }
 
 export const config = {
-	matcher: ["/admin"],
-};
+    // Protected routes
+    matcher: ["/auth/settings"]
+}
